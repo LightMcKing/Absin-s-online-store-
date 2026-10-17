@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Minimalist Store</title>
+    <title>Gambia Mine T-Shirts Store</title>
     <style>
         :root {
-            --primary: #2563eb;
-            --dark: #1e293b;
-            --light: #f8fafc;
-            --border: #e2e8f0;
+            --primary: #c62828;
+            --dark: #111827;
+            --light: #f9fafb;
+            --border: #e5e7eb;
         }
 
         * {
@@ -24,7 +24,6 @@
             color: var(--dark);
         }
 
-        /* Navigation Header */
         header {
             background: white;
             padding: 1rem 5%;
@@ -37,8 +36,18 @@
             z-index: 10;
         }
 
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .logo span {
+            color: #15803d; /* Green accent */
+        }
+
         .cart-btn {
-            background: var(--primary);
+            background: var(--dark);
             color: white;
             border: none;
             padding: 0.6rem 1.2rem;
@@ -47,7 +56,6 @@
             font-weight: 600;
         }
 
-        /* Product Catalog Grid */
         .catalog {
             max-width: 1200px;
             margin: 2rem auto;
@@ -65,22 +73,20 @@
             display: flex;
             flex-direction: column;
             padding: 1rem;
-            transition: transform 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
-        .product-card:hover {
-            transform: translateY(-4px);
-        }
-
-        .product-img-placeholder {
+        .product-img-box {
             width: 100%;
-            height: 200px;
-            background: #cbd5e1;
+            height: 280px;
+            background: #f3f4f6;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #64748b;
+            font-weight: bold;
+            color: #9ca3af;
+            border: 1px dashed #cbd5e1;
         }
 
         .product-info {
@@ -90,11 +96,22 @@
             flex-grow: 1;
         }
 
+        .product-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .product-desc {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin: 0.25rem 0 0.75rem 0;
+        }
+
         .product-price {
-            font-size: 1.25rem;
+            font-size: 1.4rem;
             font-weight: bold;
-            color: var(--primary);
-            margin: 0.5rem 0 1rem 0;
+            color: #15803d;
+            margin-bottom: 1rem;
         }
 
         .add-to-cart {
@@ -106,14 +123,19 @@
             cursor: pointer;
             margin-top: auto;
             font-weight: 600;
+            transition: opacity 0.2s;
         }
 
-        /* Shopping Cart Panel */
+        .add-to-cart:hover {
+            opacity: 0.9;
+        }
+
         .cart-panel {
             position: fixed;
             top: 0;
-            right: -400px;
-            width: 400px;
+            right: -100%;
+            width: 100%;
+            max-width: 400px;
             height: 100%;
             background: white;
             box-shadow: -4px 0 15px rgba(0,0,0,0.1);
@@ -133,12 +155,14 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
         }
 
         .close-cart {
             background: none;
             border: none;
-            font-size: 1.5rem;
+            font-size: 1.75rem;
             cursor: pointer;
         }
 
@@ -156,62 +180,75 @@
         }
 
         .checkout-btn {
-            background: var(--primary);
+            background: #25d366; /* WhatsApp Green */
             color: white;
             border: none;
             width: 100%;
             padding: 1rem;
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: bold;
             cursor: pointer;
             margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>⚡ SwiftShop</h1>
+        <div class="logo">🇬🇲 GAMBIA <span>MINE</span></div>
         <button class="cart-btn" onclick="toggleCart()">Cart (<span id="cart-count">0</span>)</button>
     </header>
 
-    <!-- Products Entrypoint -->
     <main class="catalog" id="catalog"></main>
 
-    <!-- Side Shopping Cart -->
     <div class="cart-panel" id="cart-panel">
         <div class="cart-header">
-            <h2>Your Order</h2>
+            <h2>Your Cart</h2>
             <button class="close-cart" onclick="toggleCart()">&times;</button>
         </div>
         <div class="cart-items" id="cart-items"></div>
-        <div style="margin-top: 1rem; font-size: 1.2rem; font-weight: bold;">
-            Total: \$<span id="cart-total">0.00</span>
+        <div style="margin-top: 1rem; font-size: 1.3rem; font-weight: bold; display: flex; justify-content: space-between;">
+            <span>Total:</span>
+            <span>D<span id="cart-total">0</span></span>
         </div>
-        <button class="checkout-btn" onclick="processCheckout()">Place Order</button>
+        <button class="checkout-btn" onclick="sendWhatsAppOrder()">
+            Order via WhatsApp 💬
+        </button>
     </div>
 
     <script>
-        // Edit this array to add or modify your storefront items
+        // Custom inventory for Gambia Mine t-shirts
         const products = [
-            { id: 1, name: "Minimalist Wireless Mouse", price: 29.99 },
-            { id: 2, name: "Mechanical Gaming Keyboard", price: 89.99 },
-            { id: 3, name: "Ultra-Wide Desktop Monitor", price: 249.99 },
-            { id: 4, name: "Noise-Cancelling Headphones", price: 150.00 }
+            { 
+                id: 1, 
+                name: "Gambia Mine T-Shirt (Black Row)", 
+                desc: "100% Cotton, Unisex premium fit with front/back flag print.", 
+                price: 300 
+            },
+            { 
+                id: 2, 
+                name: "Gambia Mine T-Shirt (White Row)", 
+                desc: "100% Cotton, Breathable and durable high-quality print.", 
+                price: 300 
+            }
         ];
 
         let cart = [];
 
-        // Render products into HTML catalog layout dynamically
         function displayProducts() {
             const catalog = document.getElementById('catalog');
             catalog.innerHTML = products.map(product => `
                 <div class="product-card">
-                    <div class="product-img-placeholder">Product Image</div>
+                    <div class="product-img-box">👕 Shirt Image Placeholder</div>
                     <div class="product-info">
-                        <h3>${product.name}</h3>
-                        <div class="product-price">$${product.price.toFixed(2)}</div>
+                        <div class="product-title">${product.name}</div>
+                        <div class="product-desc">${product.desc}</div>
+                        <div class="product-price">D${product.price}</div>
                         <button class="add-to-cart" onclick="addToCart(${product.id})">Add to Cart</button>
                     </div>
                 </div>
@@ -235,41 +272,48 @@
         }
 
         function updateCartUI() {
-            // Update items count in navbar button
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
             document.getElementById('cart-count').innerText = totalItems;
 
-            // Render list inside the cart sliding menu
             const cartItemsContainer = document.getElementById('cart-items');
             cartItemsContainer.innerHTML = cart.map(item => `
                 <div class="cart-item">
                     <div>
                         <h4>${item.name}</h4>
-                        <small>$${item.price.toFixed(2)} x ${item.quantity}</small>
+                        <small>D${item.price} x ${item.quantity}</small>
                     </div>
-                    <strong>$${(item.price * item.quantity).toFixed(2)}</strong>
+                    <strong>D${item.price * item.quantity}</strong>
                 </div>
             `).join('');
 
-            // Calculate total sum price
             const totalSum = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            document.getElementById('cart-total').innerText = totalSum.toFixed(2);
+            document.getElementById('cart-total').innerText = totalSum;
         }
 
-        function processCheckout() {
+        function sendWhatsAppOrder() {
             if (cart.length === 0) {
-                alert("Your cart is empty!");
+                alert("Please add items to your cart first!");
                 return;
             }
-            // Simple display of the ordered items
-            alert("Order Confirmed! Items processing details will be outputted to console logs.");
-            console.log("Processing Order Inventory items payload:", cart);
-            cart = [];
-            updateCartUI();
-            toggleCart();
+
+            // Build out a clear WhatsApp text block string
+            let message = "Hello Gambia Mine! I would like to place an order through your website link:\n\n";
+            cart.forEach(item => {
+                message += `📦 *${item.name}*\nQty: ${item.quantity} | Total: D${item.price * item.quantity}\n\n`;
+            });
+            
+            const totalSum = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            message += `💰 *Grand Total: D${totalSum}*\n\nPlease let me know how to arrange delivery!`;
+
+            // Your dynamic WhatsApp payment destination link
+            const whatsappNumber = "220868417292"; 
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me{whatsappNumber}?text=${encodedMessage}`;
+
+            // Redirect user to WhatsApp application directly
+            window.open(whatsappUrl, '_blank');
         }
 
-        // Initialize Store Catalog on window load
         displayProducts();
     </script>
 </body>
